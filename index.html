@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procurement AI 4.0 - Strategy Edition</title>
+    <title>Procurement AI 5.0 - The Smart Consultant</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
@@ -15,57 +15,57 @@
         :root {
             --brand-dark: #0f172a;
             --brand-primary: #10b981;
-            --brand-danger: #ef4444;
-            --brand-warning: #f59e0b;
+            --brand-accent: #6366f1; /* Indigo */
         }
         body { font-family: 'Rubik', sans-serif; background: #f0f4f8; color: #334155; }
         
+        /* Layout Components */
         .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .card:hover { box-shadow: 0 12px 24px -6px rgba(0,0,0,0.1); transform: translateY(-3px); }
         
-        /* Strategy Panel Input Styles */
-        .strategy-input { 
-            background: #f8fafc; border: 1px solid #cbd5e1; 
-            border-radius: 8px; padding: 4px 8px; width: 60px; 
-            text-align: center; font-weight: bold; font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-        .strategy-input:focus { outline: none; border-color: var(--brand-primary); ring: 2px var(--brand-primary); }
+        /* Strategy Cards */
+        .strategy-card { cursor: pointer; border: 2px solid transparent; }
+        .strategy-card:hover { border-color: var(--brand-accent); background: #f8fafc; }
+        .strategy-card.active { border-color: var(--brand-primary); background: #f0fdf4; }
 
+        /* Navigation Tabs */
+        .nav-tab { padding: 12px 24px; font-weight: bold; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s; }
+        .nav-tab:hover { color: var(--brand-dark); background: #f1f5f9; }
+        .nav-tab.active { color: var(--brand-accent); border-bottom-color: var(--brand-accent); background: white; }
+
+        /* Strategy Inputs */
+        .strategy-input { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 8px; width: 60px; text-align: center; font-weight: bold; }
+        
+        /* Badges & Bars */
         .score-bar-bg { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; margin-top: 8px; }
         .score-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 4px; }
-        
         .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
         .badge-risk { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
         .badge-safe { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .badge-vat-fix { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-size: 0.65rem; }
-        
         .vendor-winner { ring: 2px solid var(--brand-primary); background: #fcfdfc; }
-        .ai-insight { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-right: 4px solid var(--brand-primary); padding: 12px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; margin-top: 10px; }
-        
+        .ai-insight { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-right: 4px solid var(--brand-primary); padding: 12px; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; }
         .animate-fade-in { animation: slideIn 0.4s ease-out; }
-        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* PRINT STYLES */
+        /* Print Styles */
         @media print {
             @page { size: landscape; margin: 5mm; }
-            body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; zoom: 0.75; width: 100% !important; }
-            header .actions, #csvLabel, #errorMsg, #emptyState, #toast-container, button, .hidden-print, .strategy-controls { display: none !important; }
-            header { position: static !important; height: auto !important; border-bottom: 2px solid #000; color: black !important; background: white !important; box-shadow: none !important; }
-            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            body { background: white !important; zoom: 0.75; width: 100% !important; -webkit-print-color-adjust: exact; }
+            header .actions, #navTabs, #wizardSection, #csvLabel, button, .hidden-print { display: none !important; }
+            #dashboardSection { display: block !important; } /* Force dashboard visible */
+            header { position: static !important; border-bottom: 2px solid #000; height: auto !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
             #printHeader { display: block !important; margin-bottom: 20px; }
-            #strategyPrintSummary { display: block !important; margin-bottom: 20px; padding: 10px; border: 1px dashed #ccc; }
-            
-            .card { border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 15px !important; break-inside: avoid; page-break-inside: avoid; display: block !important; width: 100% !important; }
-            .card > div.grid { display: flex !important; width: 100% !important; gap: 10px !important; }
-            .lg\:col-span-1 { width: 25% !important; min-width: 25% !important; border-left: 1px solid #eee; padding-left: 10px; }
-            .lg\:col-span-3 { width: 75% !important; display: flex !important; flex-direction: row !important; gap: 10px !important; }
-            .lg\:col-span-3 > div { flex: 1 !important; width: 33% !important; border: 1px solid #eee !important; }
+            .card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 15px !important; display: block !important; width: 100% !important; }
+            .lg\:col-span-1 { width: 25% !important; float: right; }
+            .lg\:col-span-3 { width: 75% !important; float: left; display: flex !important; gap: 10px !important; }
+            .lg\:col-span-3 > div { flex: 1; border: 1px solid #eee; }
+            #kpiSection { display: flex !important; gap: 10px; } 
+            #kpiSection .card { flex: 1; }
             #analyticsSection { display: none !important; }
-            #kpiSection { display: flex !important; gap: 10px; margin-bottom: 10px; }
-            #kpiSection .card { flex: 1; padding: 10px !important; }
         }
-        #printHeader, #strategyPrintSummary { display: none; }
+        #printHeader { display: none; }
     </style>
 </head>
 <body class="pb-20">
@@ -73,29 +73,30 @@
     <header class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-emerald-500/20">
-                    <i class="fas fa-robot"></i>
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">4.0</span></h1>
+                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">5.0</span></h1>
                     <div class="text-[11px] text-slate-400 mt-1">מערכת תומכת החלטה אסטרטגית</div>
                 </div>
             </div>
             
             <div class="flex gap-3 actions">
-                <button onclick="loadSampleData()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-slate-300 transition">
-                    <i class="fas fa-vial mr-1"></i> דוגמה
-                </button>
-                <button onclick="sendEmail()" class="text-sm bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
-                    <i class="fas fa-envelope"></i> שלח מייל
-                </button>
-                <button onclick="window.print()" class="text-sm bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-blue-500/20 transition flex items-center gap-2">
-                    <i class="fas fa-print"></i> PDF
-                </button>
-                <label id="csvLabel" class="text-sm bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-emerald-500/20 transition flex items-center gap-2 cursor-pointer">
+                <button onclick="loadSampleData()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-slate-300 transition"><i class="fas fa-vial mr-1"></i> דוגמה</button>
+                <button onclick="sendEmail()" class="text-sm bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2"><i class="fas fa-envelope"></i> שלח מייל</button>
+                <button onclick="window.print()" class="text-sm bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2"><i class="fas fa-print"></i> PDF</button>
+                <label class="text-sm bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-file-upload"></i> טען CSV
                     <input type="file" id="csvInput" class="hidden" accept=".csv" onchange="importCSV(this)">
                 </label>
+            </div>
+        </div>
+        
+        <div id="navTabs" class="bg-white border-b flex justify-center shadow-sm">
+            <div class="container mx-auto max-w-[98%] flex">
+                <div onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active"><i class="fas fa-chart-pie mr-2"></i>לוח בקרה וניתוח</div>
+                <div onclick="switchTab('wizard')" id="tab-wizard" class="nav-tab"><i class="fas fa-magic mr-2 text-indigo-500"></i>אשף אסטרטגיה</div>
             </div>
         </div>
     </header>
@@ -107,129 +108,186 @@
             <p class="text-slate-500 text-xs mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
         </div>
 
-        <div class="card p-4 mb-6 bg-white border border-slate-200 shadow-sm strategy-controls">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2 border-l pl-6 ml-2">
-                        <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="fas fa-sliders-h"></i></div>
-                        <span class="font-bold text-slate-700 text-sm">אסטרטגיית רכש:</span>
+        <div id="dashboardSection">
+            
+            <div class="card p-4 mb-6 bg-white border border-slate-200 shadow-sm strategy-controls">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-2 border-l pl-6 ml-2">
+                            <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="fas fa-sliders-h"></i></div>
+                            <span class="font-bold text-slate-700 text-sm">הגדרות שקלול:</span>
+                        </div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-emerald-600">מחיר %</span><input type="number" id="wPrice" value="60" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-blue-600">טכני %</span><input type="number" id="wTech" value="30" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-purple-600">תנאים %</span><input type="number" id="wTerms" value="10" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div id="weightTotal" class="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800">סה"כ: 100%</div>
                     </div>
+                    <div class="flex items-center gap-3 border-r pr-6 mr-2">
+                        <span class="font-bold text-slate-700 text-sm">מטבע:</span>
+                        <select id="currencySelect" onchange="updateCurrency()" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-3 text-sm font-bold"><option value="₪">₪ שקל</option><option value="$">$ דולר</option><option value="€">€ יורו</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 hidden" id="kpiSection">
+                <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="card p-5 border-r-4 border-r-blue-500">
+                        <div class="text-xs text-slate-500 font-bold uppercase">סה"כ הזמנה מומלצת</div>
+                        <div class="text-3xl font-black text-slate-800 mt-1" id="kpiTotalCost">0</div>
+                        <div class="text-xs text-slate-400 mt-2">מחיר סופי (כולל מע"מ)</div>
+                    </div>
+                    <div class="card p-5 border-r-4 border-r-emerald-500">
+                        <div class="text-xs text-slate-500 font-bold uppercase">חיסכון חכם</div>
+                        <div class="text-3xl font-black text-emerald-600 mt-1" id="kpiSavings">0</div>
+                        <div class="text-xs text-slate-400 mt-2">מול החלופה היקרה ביותר</div>
+                    </div>
+                    <div class="card p-5 border-r-4 border-r-red-500">
+                        <div class="text-xs text-slate-500 font-bold uppercase">התראות סיכון</div>
+                        <div class="text-3xl font-black text-red-500 mt-1" id="kpiRisks">0</div>
+                        <div class="text-xs text-slate-400 mt-2">ספקים שנפסלו עקב איכות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analyticsSection" class="hidden mb-8 fade-in">
+                <div class="card p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-700 text-sm uppercase"><i class="fas fa-crosshairs mr-2"></i>מטריצת אמינות ספקים</h3>
+                        <div class="text-xs text-slate-400">ציר Y: איכות | ציר X: נפח פעילות</div>
+                    </div>
+                    <div id="chartMatrix" class="w-full h-72"></div>
+                </div>
+            </div>
+
+            <div id="itemsContainer" class="space-y-4 pb-20"></div>
+            
+            <div id="emptyState" class="text-center py-20 border-2 border-dashed border-slate-300 rounded-2xl">
+                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-4xl"><i class="fas fa-robot"></i></div>
+                <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה לניתוח</h3>
+                <p class="text-slate-500 mt-2">טען קובץ, או עבור ל"אשף האסטרטגיה" לבחירת מודל רכש</p>
+                <button onclick="switchTab('wizard')" class="mt-4 text-indigo-600 font-bold hover:underline">פתח את אשף האסטרטגיה <i class="fas fa-arrow-left"></i></button>
+            </div>
+        </div>
+
+        <div id="wizardSection" class="hidden animate-fade-in">
+            <div class="text-center mb-10 mt-4">
+                <h2 class="text-3xl font-black text-slate-800 mb-2">אשף אסטרטגיית רכש</h2>
+                <p class="text-slate-500">בחר את סוג הרכש כדי להתאים את האלגוריתם לצרכים שלך</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card strategy-card p-6 text-center hover:-translate-y-2 transition-all duration-300 group" onclick="applyStrategy(80, 10, 10)">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">רכש מדף / סחורה</h3>
+                    <p class="text-xs text-slate-500 mb-4 h-10">ציוד משרדי, חומרי ניקוי, חלפים סטנדרטיים.</p>
                     
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-emerald-600">מחיר %</span>
-                        <input type="number" id="wPrice" value="60" min="0" max="100" class="strategy-input" onchange="updateWeights()">
+                    <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between"><span>מחיר:</span> <span class="font-bold text-emerald-600">80%</span></div>
+                        <div class="flex justify-between opacity-50"><span>טכני:</span> <span>10%</span></div>
+                        <div class="flex justify-between opacity-50"><span>תנאים:</span> <span>10%</span></div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-blue-600">טכני %</span>
-                        <input type="number" id="wTech" value="30" min="0" max="100" class="strategy-input" onchange="updateWeights()">
+                    <button class="w-full py-2 rounded-lg bg-white border border-blue-500 text-blue-600 font-bold text-sm group-hover:bg-blue-600 group-hover:text-white transition">בחר בזה</button>
+                </div>
+
+                <div class="card strategy-card p-6 text-center hover:-translate-y-2 transition-all duration-300 group" onclick="applyStrategy(40, 50, 10)">
+                    <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <i class="fas fa-tractor"></i>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-purple-600">תנאים %</span>
-                        <input type="number" id="wTerms" value="10" min="0" max="100" class="strategy-input" onchange="updateWeights()">
-                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">ציוד ומכונות</h3>
+                    <p class="text-xs text-slate-500 mb-4 h-10">טרקטורונים, משאבות, מכונות ייצור (CAPEX).</p>
                     
-                    <div id="weightTotal" class="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800">סה"כ: 100%</div>
+                    <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between opacity-70"><span>מחיר:</span> <span>40%</span></div>
+                        <div class="flex justify-between"><span>טכני:</span> <span class="font-bold text-blue-600">50%</span></div>
+                        <div class="flex justify-between opacity-50"><span>תנאים:</span> <span>10%</span></div>
+                    </div>
+                    <button class="w-full py-2 rounded-lg bg-white border border-emerald-500 text-emerald-600 font-bold text-sm group-hover:bg-emerald-600 group-hover:text-white transition">בחר בזה</button>
                 </div>
 
-                <div class="flex items-center gap-3 border-r pr-6 mr-2">
-                    <span class="font-bold text-slate-700 text-sm">מטבע:</span>
-                    <select id="currencySelect" onchange="updateCurrency()" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
-                        <option value="₪">₪ שקל (ILS)</option>
-                        <option value="$">$ דולר (USD)</option>
-                        <option value="€">€ יורו (EUR)</option>
-                        <option value="£">£ פאונד (GBP)</option>
-                    </select>
+                <div class="card strategy-card p-6 text-center hover:-translate-y-2 transition-all duration-300 group" onclick="applyStrategy(30, 60, 10)">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">שירותים וקבלנים</h3>
+                    <p class="text-xs text-slate-500 mb-4 h-10">יועצים, עורכי דין, קבלני עפר, כוח אדם.</p>
+                    
+                    <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between opacity-50"><span>מחיר:</span> <span>30%</span></div>
+                        <div class="flex justify-between"><span>טכני:</span> <span class="font-bold text-purple-600">60%</span></div>
+                        <div class="flex justify-between opacity-50"><span>תנאים:</span> <span>10%</span></div>
+                    </div>
+                    <button class="w-full py-2 rounded-lg bg-white border border-purple-500 text-purple-600 font-bold text-sm group-hover:bg-purple-600 group-hover:text-white transition">בחר בזה</button>
                 </div>
-            </div>
-        </div>
 
-        <div id="strategyPrintSummary" class="text-sm text-slate-600">
-            <strong>אסטרטגיה נבחרת:</strong> 
-            <span id="printWPrice">60</span>% מחיר | 
-            <span id="printWTech">30</span>% טכני | 
-            <span id="printWTerms">10</span>% תנאים |
-            מטבע: <span id="printCurrency">₪</span>
-        </div>
-
-        <div id="errorMsg" class="hidden bg-red-100 border-r-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm" role="alert">
-            <p class="font-bold"><i class="fas fa-exclamation-circle ml-2"></i>שגיאה</p>
-            <p id="errorText"></p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 hidden" id="kpiSection">
-            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="card p-5 border-r-4 border-r-blue-500">
-                    <div class="text-xs text-slate-500 font-bold uppercase">סה"כ הזמנה מומלצת</div>
-                    <div class="text-3xl font-black text-slate-800 mt-1" id="kpiTotalCost">0</div>
-                    <div class="text-xs text-slate-400 mt-2">מחיר סופי (כולל מע"מ)</div>
-                </div>
-                <div class="card p-5 border-r-4 border-r-emerald-500">
-                    <div class="text-xs text-slate-500 font-bold uppercase">חיסכון חכם</div>
-                    <div class="text-3xl font-black text-emerald-600 mt-1" id="kpiSavings">0</div>
-                    <div class="text-xs text-slate-400 mt-2">מול החלופה היקרה ביותר</div>
-                </div>
-                <div class="card p-5 border-r-4 border-r-red-500">
-                    <div class="text-xs text-slate-500 font-bold uppercase">התראות סיכון</div>
-                    <div class="text-3xl font-black text-red-500 mt-1" id="kpiRisks">0</div>
-                    <div class="text-xs text-slate-400 mt-2">ספקים שנפסלו עקב איכות</div>
+                <div class="card strategy-card p-6 text-center hover:-translate-y-2 transition-all duration-300 group" onclick="applyStrategy(40, 40, 20)">
+                    <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">שותפות אסטרטגית</h3>
+                    <p class="text-xs text-slate-500 mb-4 h-10">ספק מרכזי, פרויקט תשתית ארוך טווח.</p>
+                    
+                    <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex justify-between opacity-70"><span>מחיר:</span> <span>40%</span></div>
+                        <div class="flex justify-between opacity-70"><span>טכני:</span> <span>40%</span></div>
+                        <div class="flex justify-between"><span>תנאים:</span> <span class="font-bold text-orange-600">20%</span></div>
+                    </div>
+                    <button class="w-full py-2 rounded-lg bg-white border border-orange-500 text-orange-600 font-bold text-sm group-hover:bg-orange-600 group-hover:text-white transition">בחר בזה</button>
                 </div>
             </div>
         </div>
 
-        <div id="analyticsSection" class="hidden mb-8 fade-in">
-            <div class="card p-5">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-700 text-sm uppercase"><i class="fas fa-crosshairs mr-2"></i>מטריצת אמינות ספקים</h3>
-                    <div class="text-xs text-slate-400">ציר Y: איכות | ציר X: נפח פעילות</div>
-                </div>
-                <div id="chartMatrix" class="w-full h-72"></div>
-            </div>
+        <div id="errorMsg" class="hidden bg-red-100 border-r-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
+            <p class="font-bold">שגיאה</p><p id="errorText"></p>
         </div>
-
-        <div id="itemsContainer" class="space-y-4 pb-20"></div>
-        
-        <div id="emptyState" class="text-center py-20 border-2 border-dashed border-slate-300 rounded-2xl">
-            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-4xl"><i class="fas fa-robot"></i></div>
-            <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה (V4.0)</h3>
-            <p class="text-slate-500 mt-2">טען קובץ וקבע אסטרטגיית רכש מותאמת אישית</p>
-        </div>
-
     </div>
 
     <script>
-        // --- Global State ---
-        const state = {
-            items: [],
-            currency: '₪',
-            weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 }
-        };
-
+        // --- State ---
+        const state = { items: [], currency: '₪', weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 } };
         const VAT_RATE = 0.18; 
         document.getElementById('printDate').innerText = new Date().toLocaleDateString('he-IL');
 
-        // --- Strategy Logic ---
+        // --- Navigation ---
+        function switchTab(tabId) {
+            document.getElementById('tab-dashboard').classList.remove('active');
+            document.getElementById('tab-wizard').classList.remove('active');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('wizardSection').classList.add('hidden');
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById(tabId + 'Section').classList.remove('hidden');
+        }
+
+        // --- Strategy Wizard Logic ---
+        function applyStrategy(p, t, r) {
+            document.getElementById('wPrice').value = p;
+            document.getElementById('wTech').value = t;
+            document.getElementById('wTerms').value = r;
+            updateWeights(); // This triggers re-calculation
+            switchTab('dashboard'); // Go back to analysis
+            
+            // Visual feedback
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 animate-fade-in';
+            toast.innerHTML = `<i class="fas fa-check-circle text-emerald-400 mr-2"></i>האסטרטגיה עודכנה בהצלחה!`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // --- Logic ---
         function updateWeights() {
             const p = parseFloat(document.getElementById('wPrice').value) || 0;
             const t = parseFloat(document.getElementById('wTech').value) || 0;
             const r = parseFloat(document.getElementById('wTerms').value) || 0;
             const total = p + t + r;
-
             const badge = document.getElementById('weightTotal');
             badge.innerText = `סה"כ: ${total}%`;
             
             if (total === 100) {
                 badge.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800";
-                state.weights.PRICE = p / 100;
-                state.weights.TECH = t / 100;
-                state.weights.TERMS = r / 100;
-                
-                // Update Print Summary
-                document.getElementById('printWPrice').innerText = p;
-                document.getElementById('printWTech').innerText = t;
-                document.getElementById('printWTerms').innerText = r;
-
-                // Re-run analysis if data exists
+                state.weights.PRICE = p / 100; state.weights.TECH = t / 100; state.weights.TERMS = r / 100;
                 if (state.items.length > 0) reAnalyzeAll();
             } else {
                 badge.className = "text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-800";
@@ -238,47 +296,28 @@
 
         function updateCurrency() {
             state.currency = document.getElementById('currencySelect').value;
-            document.getElementById('printCurrency').innerText = state.currency;
-            if (state.items.length > 0) renderList(); // Just re-render visuals
+            if (state.items.length > 0) renderList();
         }
 
         function reAnalyzeAll() {
-            // Re-map raw data through analysis engine with NEW weights
-            const freshAnalysis = state.items.map(item => {
-                // We need to keep original data, stripping old analysis
-                const raw = { ...item }; 
-                delete raw._analysis;
-                return analyzeItem(raw);
+            state.items = state.items.map(item => {
+                const raw = { ...item }; delete raw._analysis; return analyzeItem(raw);
             }).filter(x => x);
-            
-            state.items = freshAnalysis;
             renderList();
         }
 
-        // --- Core Logic ---
         function safeString(val) { return (val || 'לא צוין').toString(); }
 
         function analyzeItem(item) {
             const vendors = [1, 2, 3].map(id => ({
-                id, 
-                name: item[`v${id}_name`], 
-                rawPrice: item[`v${id}_price`], 
-                price: item[`v${id}_price`],    
-                score: item[`v${id}_score`], 
-                terms: safeString(item[`v${id}_terms`]),
-                delivery: safeString(item[`v${id}_delivery`]),
-                shipping: safeString(item[`v${id}_shipping`]),
-                vat: safeString(item[`v${id}_vat`]),
-                vatAdjusted: false
+                id, name: item[`v${id}_name`], rawPrice: item[`v${id}_price`], price: item[`v${id}_price`], score: item[`v${id}_score`], 
+                terms: safeString(item[`v${id}_terms`]), delivery: safeString(item[`v${id}_delivery`]), shipping: safeString(item[`v${id}_shipping`]), vat: safeString(item[`v${id}_vat`]), vatAdjusted: false
             })).filter(v => v.rawPrice > 0 && v.name);
 
             if (vendors.length === 0) return null;
 
             vendors.forEach(v => {
-                if (v.vat.includes('לא') || v.vat.includes('No')) {
-                    v.price = v.rawPrice * (1 + VAT_RATE); 
-                    v.vatAdjusted = true;
-                }
+                if (v.vat.includes('לא') || v.vat.includes('No')) { v.price = v.rawPrice * (1 + VAT_RATE); v.vatAdjusted = true; }
             });
 
             const minPrice = Math.min(...vendors.map(v => v.price));
@@ -288,46 +327,32 @@
             vendors.forEach(v => {
                 const sPrice = (minPrice / v.price) * 100;
                 let sTerms = 50;
-                if (v.terms.includes('90')) sTerms = 100;
-                else if (v.terms.includes('60')) sTerms = 85;
-                else if (v.terms.includes('מזומן')) sTerms = 30;
+                if (v.terms.includes('90')) sTerms = 100; else if (v.terms.includes('60')) sTerms = 85; else if (v.terms.includes('מזומן')) sTerms = 30;
 
-                // Dynamic Weights Used Here
                 v.finalScore = (sPrice * state.weights.PRICE) + ((v.score * 10) * state.weights.TECH) + (sTerms * state.weights.TERMS);
-                
                 v.isRisky = v.score < 6;
-                // Penalize risk only if Tech weight is significant (>10%)
+                // Penalize risk only if technical weight is significant
                 if (v.isRisky && state.weights.TECH > 0.1) v.finalScore -= 30;
-                
                 v.logisticsWarning = (v.shipping.includes('לא'));
             });
 
             const winner = vendors.reduce((prev, curr) => (prev.finalScore > curr.finalScore) ? prev : curr);
             const savings = maxPrice - winner.price;
 
-            let insight = "";
-            let insightType = "neutral";
-
+            let insight = ""; let insightType = "neutral";
             if (winner.id !== cheapest.id) {
                 const diff = winner.price - cheapest.price;
-                if (cheapest.isRisky) {
-                    insight = `<b>שים לב:</b> הספק הזול נפסל עקב איכות. מומלץ לשלם תוספת עבור ${winner.name}.`;
-                    insightType = "warning";
-                } else {
-                    insight = `<b>המלצת איכות:</b> ${winner.name} מנצח בזכות ציון משוקלל גבוה (דגש: ${(state.weights.TECH*100).toFixed(0)}% טכני).`;
-                    insightType = "positive";
-                }
+                if (cheapest.isRisky) { insight = `<b>שים לב:</b> הזול ביותר (${cheapest.name}) נפסל עקב איכות.`; insightType = "warning"; }
+                else { insight = `<b>בחירת איכות:</b> ${winner.name} מנצח בזכות הציון הטכני.`; insightType = "positive"; }
             } else {
-                insight = winner.isRisky ? `<b>אזהרה:</b> כל ההצעות בסיכון!` : `ההצעה המשתלמת ביותר לפי האסטרטגיה שנבחרה.`;
+                insight = winner.isRisky ? `<b>אזהרה:</b> כל ההצעות בסיכון!` : `ההצעה המשתלמת ביותר.`;
                 if(winner.isRisky) insightType = "warning";
             }
-
-            if (winner.vatAdjusted) insight += `<br><span class="text-blue-600 text-xs">ℹ️ מחיר כולל מע"מ מותאם.</span>`;
+            if (winner.vatAdjusted) insight += `<br><span class="text-blue-600 text-xs">ℹ️ מחיר מותאם מע"מ.</span>`;
 
             return { ...item, _analysis: { winnerId: winner.id, vendors, minPrice, maxPrice, winner, savings, insight, insightType } };
         }
 
-        // --- Render Logic ---
         function renderList() {
             const container = document.getElementById('itemsContainer');
             container.innerHTML = '';
@@ -345,12 +370,10 @@
             state.items.forEach(item => {
                 const an = item._analysis;
                 let vendorsHtml = '';
-                
                 an.vendors.forEach(v => {
                     const isWin = (v.id === an.winnerId);
                     const borderColor = v.isRisky ? 'border-red-200 bg-red-50' : (isWin ? 'vendor-winner' : 'border-slate-100 bg-slate-50');
                     const barColor = v.isRisky ? 'bg-red-500' : (isWin ? 'bg-emerald-500' : 'bg-blue-500');
-
                     let badges = '';
                     if (v.isRisky) badges += `<span class="badge badge-risk">סיכון</span>`;
                     else if (v.score >= 9) badges += `<span class="badge badge-safe">איכות</span>`;
@@ -359,35 +382,20 @@
                     vendorsHtml += `
                         <div class="p-4 rounded-lg border ${borderColor} relative flex flex-col h-full">
                             ${isWin ? '<div class="absolute -top-3 left-3 bg-emerald-600 text-white text-[10px] px-2 py-1 rounded shadow-md z-10 font-bold hidden-print"><i class="fas fa-trophy mr-1"></i>מומלץ</div>' : ''}
-                            
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="font-bold text-sm text-slate-700 line-clamp-1" title="${v.name}">${v.name}</div>
-                            </div>
-                            
-                            <div class="text-xl font-black text-slate-800 mb-2">
-                                ${state.currency}${v.price.toLocaleString(undefined, {maximumFractionDigits: 0})}
-                            </div>
-                            
+                            <div class="flex justify-between items-start mb-2"><div class="font-bold text-sm text-slate-700 line-clamp-1" title="${v.name}">${v.name}</div></div>
+                            <div class="text-xl font-black text-slate-800 mb-2">${state.currency}${v.price.toLocaleString(undefined, {maximumFractionDigits: 0})}</div>
                             <div class="flex flex-wrap gap-1 mb-3">${badges}</div>
-                            
                             <div class="text-[10px] text-slate-500 mb-2 pt-2 border-t border-slate-200 border-dashed space-y-0.5">
                                 <div class="flex justify-between"><span>אספקה:</span> <span>${v.delivery}</span></div>
                                 <div class="flex justify-between"><span>משלוח:</span> <span>${v.shipping}</span></div>
                                 <div class="flex justify-between"><span>מע"מ:</span> <span class="${v.vat.includes('לא') ? 'text-red-500 font-bold' : 'text-green-600'}">${v.vat}</span></div>
                                 <div class="flex justify-between"><span>תשלום:</span> <span>${v.terms}</span></div>
                             </div>
-
                             <div class="mt-auto">
-                                <div class="flex justify-between text-[10px] text-slate-500 mb-1">
-                                    <span>ציון: <b class="${v.score < 6 ? 'text-red-500' : ''}">${v.score}</b></span>
-                                    <span>${v.finalScore.toFixed(0)}</span>
-                                </div>
-                                <div class="score-bar-bg">
-                                    <div class="score-bar-fill ${barColor}" style="width: ${Math.min(v.finalScore, 100)}%"></div>
-                                </div>
+                                <div class="flex justify-between text-[10px] text-slate-500 mb-1"><span>ציון: <b>${v.score}</b></span><span>${v.finalScore.toFixed(0)}</span></div>
+                                <div class="score-bar-bg"><div class="score-bar-fill ${barColor}" style="width: ${Math.min(v.finalScore, 100)}%"></div></div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
 
                 const row = document.createElement('div');
@@ -397,120 +405,66 @@
                         <div class="lg:col-span-1 flex flex-col">
                             <h3 class="font-bold text-slate-800 text-lg">${item.name}</h3>
                             <div class="text-xs text-slate-500 mt-1 mb-3 bg-slate-50 p-2 rounded border border-slate-100">${item.spec || 'אין מפרט'}</div>
-                            <div class="ai-insight border-${an.insightType === 'warning' ? 'orange' : 'emerald'}-500">
-                                ${an.insight}
-                            </div>
+                            <div class="ai-insight border-${an.insightType === 'warning' ? 'orange' : 'emerald'}-500">${an.insight}</div>
                         </div>
-                        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-                            ${vendorsHtml}
-                        </div>
-                    </div>
-                `;
+                        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">${vendorsHtml}</div>
+                    </div>`;
                 container.appendChild(row);
             });
-            
             updateCharts();
         }
 
-        // --- Email Logic ---
-        function sendEmail() {
-            if (state.items.length === 0) return alert("אנא טען נתונים תחילה");
-            
-            const totalCost = document.getElementById('kpiTotalCost').innerText;
-            const savings = document.getElementById('kpiSavings').innerText;
-            const date = new Date().toLocaleDateString('he-IL');
-            
-            const subject = `דו"ח רכש והשוואת ספקים - ${date}`;
-            const body = `שלום רב,
-            
-מצורף סיכום ניתוח רכש שהופק במערכת Procurement AI.
-
-סיכום מנהלים:
---------------------------------
-סה"כ עלות עסקה מומלצת: ${totalCost}
-חיסכון משוער מול חלופות: ${savings}
-אסטרטגיה שנבחרה: ${document.getElementById('wPrice').value}% מחיר, ${document.getElementById('wTech').value}% טכני.
-
-אנא ראו את קובץ ה-PDF המצורף לפירוט מלא של הספקים וההמלצות.
-
-בברכה,
-מערכת הרכש`;
-
-            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        }
-
-        // --- Charts & Helpers ---
         function updateCharts() {
-            const vendorMap = {};
-            let riskyCount = 0; let totalCost = 0; let totalSavings = 0;
+            const vendorMap = {}; let riskyCount = 0; let totalCost = 0; let totalSavings = 0;
             state.items.forEach(item => {
-                const an = item._analysis;
-                totalCost += an.winner.price;
-                totalSavings += an.savings;
-                an.vendors.forEach(v => {
-                    if (v.isRisky) riskyCount++;
-                    if (!vendorMap[v.name]) vendorMap[v.name] = { count: 0, sumScore: 0 };
-                    vendorMap[v.name].count++;
-                    vendorMap[v.name].sumScore += v.score;
-                });
+                const an = item._analysis; totalCost += an.winner.price; totalSavings += an.savings;
+                an.vendors.forEach(v => { if (v.isRisky) riskyCount++; if (!vendorMap[v.name]) vendorMap[v.name] = { count: 0, sumScore: 0 }; vendorMap[v.name].count++; vendorMap[v.name].sumScore += v.score; });
             });
-
             document.getElementById('kpiTotalCost').innerText = state.currency + totalCost.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('kpiSavings').innerText = state.currency + totalSavings.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('kpiRisks').innerText = riskyCount;
-
+            
             const xData = []; const yData = []; const textData = []; const colorData = [];
             Object.keys(vendorMap).forEach(vName => {
-                const v = vendorMap[vName];
-                const avgScore = v.sumScore / v.count;
+                const v = vendorMap[vName]; const avgScore = v.sumScore / v.count;
                 xData.push(v.count); yData.push(avgScore); textData.push(vName); colorData.push(avgScore < 7 ? '#ef4444' : '#10b981');
             });
-
-            const trace = { x: xData, y: yData, mode: 'markers+text', type: 'scatter', text: textData, textposition: 'top center', marker: { size: 14, color: colorData, opacity: 0.8 } };
             const layout = { margin: {t:20, b:40, l:40, r:20}, xaxis: { title: 'נפח פעילות', showgrid: true }, yaxis: { title: 'ציון איכות', range: [0, 11] } };
-            Plotly.newPlot('chartMatrix', [trace], layout, {displayModeBar: false});
+            Plotly.newPlot('chartMatrix', [{ x: xData, y: yData, mode: 'markers+text', type: 'scatter', text: textData, textposition: 'top center', marker: { size: 14, color: colorData, opacity: 0.8 } }], layout, {displayModeBar: false});
         }
 
-        function showError(msg) {
-            const el = document.getElementById('errorMsg');
-            document.getElementById('errorText').innerText = msg;
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 6000);
+        function sendEmail() {
+            if (state.items.length === 0) return alert("אנא טען נתונים תחילה");
+            const subject = `דו"ח רכש - ${new Date().toLocaleDateString('he-IL')}`;
+            const body = `שלום,\n\nמצורף סיכום רכש.\nסה"כ עלות מומלצת: ${document.getElementById('kpiTotalCost').innerText}\nאסטרטגיה: ${document.getElementById('wPrice').value}% מחיר.\n\nאנא צרפו את ה-PDF.`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
 
         function importCSV(input) {
             if (!input.files[0]) return;
-            Papa.parse(input.files[0], {
-                header: true, skipEmptyLines: true,
-                complete: (res) => {
-                    if (res.errors.length > 0) return showError("שגיאה בקובץ");
-                    if (res.data.length === 0) return showError("הקובץ ריק");
-                    try {
-                        const newItems = res.data.map((r, i) => {
-                            const clean = (v) => parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0;
-                            const getVal = (keys) => { for (let k of keys) if(r[k] !== undefined) return r[k]; return ''; };
-                            return {
-                                id: i,
-                                name: getVal(['שם הפריט', 'Item Name']), 
-                                spec: getVal(['מפרט טכני', 'Spec']),
-                                v1_name: getVal(['ספק א']), v1_price: clean(getVal(['מחיר א'])), v1_score: clean(getVal(['ציון א'])), v1_terms: getVal(['תשלום א']), v1_delivery: getVal(['אספקה א']), v1_shipping: getVal(['משלוח א']), v1_vat: getVal(['מעמ א']),
-                                v2_name: getVal(['ספק ב']), v2_price: clean(getVal(['מחיר ב'])), v2_score: clean(getVal(['ציון ב'])), v2_terms: getVal(['תשלום ב']), v2_delivery: getVal(['אספקה ב']), v2_shipping: getVal(['משלוח ב']), v2_vat: getVal(['מעמ ב']),
-                                v3_name: getVal(['ספק ג']), v3_price: clean(getVal(['מחיר ג'])), v3_score: clean(getVal(['ציון ג'])), v3_terms: getVal(['תשלום ג']), v3_delivery: getVal(['אספקה ג']), v3_shipping: getVal(['משלוח ג']), v3_vat: getVal(['מעמ ג'])
-                            };
-                        }).filter(i => i.name).map(analyzeItem).filter(x => x);
-                        if (newItems.length === 0) showError("לא נמצאו נתונים תקינים");
-                        else { state.items = newItems; renderList(); }
-                    } catch (e) { console.error(e); showError("שגיאה בעיבוד הנתונים"); }
-                }
-            });
+            Papa.parse(input.files[0], { header: true, skipEmptyLines: true, complete: (res) => {
+                if (res.errors.length > 0 || res.data.length === 0) return document.getElementById('errorMsg').classList.remove('hidden');
+                try {
+                    const newItems = res.data.map((r, i) => {
+                        const clean = (v) => parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0;
+                        const getVal = (keys) => { for (let k of keys) if(r[k] !== undefined) return r[k]; return ''; };
+                        return {
+                            id: i, name: getVal(['שם הפריט']), spec: getVal(['מפרט טכני']),
+                            v1_name: getVal(['ספק א']), v1_price: clean(getVal(['מחיר א'])), v1_score: clean(getVal(['ציון א'])), v1_terms: getVal(['תשלום א']), v1_delivery: getVal(['אספקה א']), v1_shipping: getVal(['משלוח א']), v1_vat: getVal(['מעמ א']),
+                            v2_name: getVal(['ספק ב']), v2_price: clean(getVal(['מחיר ב'])), v2_score: clean(getVal(['ציון ב'])), v2_terms: getVal(['תשלום ב']), v2_delivery: getVal(['אספקה ב']), v2_shipping: getVal(['משלוח ב']), v2_vat: getVal(['מעמ ב']),
+                            v3_name: getVal(['ספק ג']), v3_price: clean(getVal(['מחיר ג'])), v3_score: clean(getVal(['ציון ג'])), v3_terms: getVal(['תשלום ג']), v3_delivery: getVal(['אספקה ג']), v3_shipping: getVal(['משלוח ג']), v3_vat: getVal(['מעמ ג'])
+                        };
+                    }).filter(i => i.name).map(analyzeItem).filter(x => x);
+                    state.items = newItems; renderList();
+                } catch (e) { console.error(e); }
+            }});
             input.value = ''; 
         }
 
         function loadSampleData() {
             const csv = `שם הפריט,מפרט טכני,ספק א,מחיר א,תשלום א,ציון א,אספקה א,משלוח א,מעמ א,ספק ב,מחיר ב,תשלום ב,ציון ב,אספקה ב,משלוח ב,מעמ ב,ספק ג,מחיר ג,תשלום ג,ציון ג,אספקה ג,משלוח ג,מעמ ג
 באגר 30 טון,חציבה,עפר הנגב,2800,שוטף+60,9,מיידי,כולל,כולל,חפור-קל,2400,מזומן,5,מיידי,לא כולל,לא כולל,נתיבי צפון,3100,שוטף+30,8,תוך שבוע,כולל,כולל`;
-            const file = new File([csv], "sample.csv", { type: "text/csv" });
-            const dt = new DataTransfer(); dt.items.add(file);
+            const dt = new DataTransfer(); dt.items.add(new File([csv], "sample.csv", { type: "text/csv" }));
             importCSV({ files: dt.files });
         }
     </script>
