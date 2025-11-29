@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procurement AI 3.9 - Print Fix</title>
+    <title>Procurement AI 4.0 - Strategy Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
@@ -23,6 +23,15 @@
         .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .card:hover { box-shadow: 0 12px 24px -6px rgba(0,0,0,0.1); transform: translateY(-3px); }
         
+        /* Strategy Panel Input Styles */
+        .strategy-input { 
+            background: #f8fafc; border: 1px solid #cbd5e1; 
+            border-radius: 8px; padding: 4px 8px; width: 60px; 
+            text-align: center; font-weight: bold; font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .strategy-input:focus { outline: none; border-color: var(--brand-primary); ring: 2px var(--brand-primary); }
+
         .score-bar-bg { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; margin-top: 8px; }
         .score-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 4px; }
         
@@ -37,87 +46,26 @@
         .animate-fade-in { animation: slideIn 0.4s ease-out; }
         @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- PDF PRINT STYLES (VERSION 3.9 - FORCED LAYOUT) --- */
+        /* PRINT STYLES */
         @media print {
             @page { size: landscape; margin: 5mm; }
+            body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; zoom: 0.75; width: 100% !important; }
+            header .actions, #csvLabel, #errorMsg, #emptyState, #toast-container, button, .hidden-print, .strategy-controls { display: none !important; }
+            header { position: static !important; height: auto !important; border-bottom: 2px solid #000; color: black !important; background: white !important; box-shadow: none !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            #printHeader { display: block !important; margin-bottom: 20px; }
+            #strategyPrintSummary { display: block !important; margin-bottom: 20px; padding: 10px; border: 1px dashed #ccc; }
             
-            body { 
-                background: white !important; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-                font-size: 12px; /* הקטנת פונט כללית */
-            }
-
-            /* הסתרת כפתורים ותפריטים */
-            header .actions, #csvLabel, #errorMsg, #emptyState, #toast-container, button, .hidden-print { display: none !important; }
-            
-            header { 
-                position: static !important; 
-                height: auto !important; 
-                border-bottom: 2px solid #000;
-                color: black !important;
-                background: white !important;
-                box-shadow: none !important;
-            }
-            .text-\[11px\] { display: none !important; }
-
-            .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-            #printHeader { display: block !important; margin-bottom: 10px; }
-
-            /* --- כפיית מבנה לרוחב (Table-like Layout) --- */
-            
-            /* הכרטיס הראשי */
-            .card {
-                display: flex !important;
-                flex-direction: row !important;
-                border: 1px solid #ccc !important;
-                box-shadow: none !important;
-                margin-bottom: 10px !important;
-                break-inside: avoid;
-                page-break-inside: avoid;
-                width: 100% !important;
-            }
-
-            /* ביטול הגריד של Tailwind */
-            .card > div.grid {
-                display: flex !important;
-                width: 100% !important;
-                gap: 10px !important;
-            }
-
-            /* עמודה ימנית (פרטי פריט) - קבוע 25% */
-            .lg\:col-span-1 {
-                width: 25% !important;
-                min-width: 25% !important;
-                border-left: 1px solid #eee;
-                padding-left: 10px;
-            }
-
-            /* עמודה שמאלית (ספקים) - קבוע 75% */
-            .lg\:col-span-3 {
-                width: 75% !important;
-                display: flex !important; /* מכריח שורה אחת */
-                flex-direction: row !important;
-                gap: 10px !important;
-            }
-
-            /* כל ספק מקבל שליש מהמקום הנותר */
-            .lg\:col-span-3 > div {
-                flex: 1 !important;
-                width: 33% !important;
-                border: 1px solid #eee !important;
-            }
-            
-            /* הקטנת טקסטים בתוך הכרטיסים */
-            .text-xl { font-size: 1.1rem !important; }
-            .text-lg { font-size: 1rem !important; }
-            
-            /* הסתרת הגרף הגדול בהדפסה כדי לחסוך מקום */
+            .card { border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 15px !important; break-inside: avoid; page-break-inside: avoid; display: block !important; width: 100% !important; }
+            .card > div.grid { display: flex !important; width: 100% !important; gap: 10px !important; }
+            .lg\:col-span-1 { width: 25% !important; min-width: 25% !important; border-left: 1px solid #eee; padding-left: 10px; }
+            .lg\:col-span-3 { width: 75% !important; display: flex !important; flex-direction: row !important; gap: 10px !important; }
+            .lg\:col-span-3 > div { flex: 1 !important; width: 33% !important; border: 1px solid #eee !important; }
             #analyticsSection { display: none !important; }
             #kpiSection { display: flex !important; gap: 10px; margin-bottom: 10px; }
             #kpiSection .card { flex: 1; padding: 10px !important; }
         }
-        #printHeader { display: none; }
+        #printHeader, #strategyPrintSummary { display: none; }
     </style>
 </head>
 <body class="pb-20">
@@ -129,12 +77,8 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">3.9</span></h1>
-                    <div class="text-[11px] text-slate-400 flex gap-3 mt-1">
-                        <span class="bg-slate-800 px-2 py-0.5 rounded text-emerald-300 font-bold border border-emerald-900/50">60% מחיר (כולל מע"מ)</span>
-                        <span class="bg-slate-800 px-2 py-0.5 rounded text-blue-300 font-bold border border-blue-900/50">30% טכני</span>
-                        <span class="bg-slate-800 px-2 py-0.5 rounded text-purple-300 font-bold border border-purple-900/50">10% תנאים</span>
-                    </div>
+                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">4.0</span></h1>
+                    <div class="text-[11px] text-slate-400 mt-1">מערכת תומכת החלטה אסטרטגית</div>
                 </div>
             </div>
             
@@ -142,8 +86,11 @@
                 <button onclick="loadSampleData()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-slate-300 transition">
                     <i class="fas fa-vial mr-1"></i> דוגמה
                 </button>
+                <button onclick="sendEmail()" class="text-sm bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
+                    <i class="fas fa-envelope"></i> שלח מייל
+                </button>
                 <button onclick="window.print()" class="text-sm bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-blue-500/20 transition flex items-center gap-2">
-                    <i class="fas fa-print"></i> יצוא PDF
+                    <i class="fas fa-print"></i> PDF
                 </button>
                 <label id="csvLabel" class="text-sm bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg shadow-emerald-500/20 transition flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-file-upload"></i> טען CSV
@@ -160,6 +107,51 @@
             <p class="text-slate-500 text-xs mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
         </div>
 
+        <div class="card p-4 mb-6 bg-white border border-slate-200 shadow-sm strategy-controls">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 border-l pl-6 ml-2">
+                        <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="fas fa-sliders-h"></i></div>
+                        <span class="font-bold text-slate-700 text-sm">אסטרטגיית רכש:</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-emerald-600">מחיר %</span>
+                        <input type="number" id="wPrice" value="60" min="0" max="100" class="strategy-input" onchange="updateWeights()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-blue-600">טכני %</span>
+                        <input type="number" id="wTech" value="30" min="0" max="100" class="strategy-input" onchange="updateWeights()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-purple-600">תנאים %</span>
+                        <input type="number" id="wTerms" value="10" min="0" max="100" class="strategy-input" onchange="updateWeights()">
+                    </div>
+                    
+                    <div id="weightTotal" class="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800">סה"כ: 100%</div>
+                </div>
+
+                <div class="flex items-center gap-3 border-r pr-6 mr-2">
+                    <span class="font-bold text-slate-700 text-sm">מטבע:</span>
+                    <select id="currencySelect" onchange="updateCurrency()" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
+                        <option value="₪">₪ שקל (ILS)</option>
+                        <option value="$">$ דולר (USD)</option>
+                        <option value="€">€ יורו (EUR)</option>
+                        <option value="£">£ פאונד (GBP)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="strategyPrintSummary" class="text-sm text-slate-600">
+            <strong>אסטרטגיה נבחרת:</strong> 
+            <span id="printWPrice">60</span>% מחיר | 
+            <span id="printWTech">30</span>% טכני | 
+            <span id="printWTerms">10</span>% תנאים |
+            מטבע: <span id="printCurrency">₪</span>
+        </div>
+
         <div id="errorMsg" class="hidden bg-red-100 border-r-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm" role="alert">
             <p class="font-bold"><i class="fas fa-exclamation-circle ml-2"></i>שגיאה</p>
             <p id="errorText"></p>
@@ -169,12 +161,12 @@
             <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="card p-5 border-r-4 border-r-blue-500">
                     <div class="text-xs text-slate-500 font-bold uppercase">סה"כ הזמנה מומלצת</div>
-                    <div class="text-3xl font-black text-slate-800 mt-1" id="kpiTotalCost">₪0</div>
+                    <div class="text-3xl font-black text-slate-800 mt-1" id="kpiTotalCost">0</div>
                     <div class="text-xs text-slate-400 mt-2">מחיר סופי (כולל מע"מ)</div>
                 </div>
                 <div class="card p-5 border-r-4 border-r-emerald-500">
                     <div class="text-xs text-slate-500 font-bold uppercase">חיסכון חכם</div>
-                    <div class="text-3xl font-black text-emerald-600 mt-1" id="kpiSavings">₪0</div>
+                    <div class="text-3xl font-black text-emerald-600 mt-1" id="kpiSavings">0</div>
                     <div class="text-xs text-slate-400 mt-2">מול החלופה היקרה ביותר</div>
                 </div>
                 <div class="card p-5 border-r-4 border-r-red-500">
@@ -199,20 +191,73 @@
         
         <div id="emptyState" class="text-center py-20 border-2 border-dashed border-slate-300 rounded-2xl">
             <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-4xl"><i class="fas fa-robot"></i></div>
-            <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה (V3.9)</h3>
-            <p class="text-slate-500 mt-2">טען קובץ נתונים - הדפסה מותאמת ב-100%</p>
+            <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה (V4.0)</h3>
+            <p class="text-slate-500 mt-2">טען קובץ וקבע אסטרטגיית רכש מותאמת אישית</p>
         </div>
 
     </div>
 
     <script>
-        const state = { items: [], weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 } };
+        // --- Global State ---
+        const state = {
+            items: [],
+            currency: '₪',
+            weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 }
+        };
+
         const VAT_RATE = 0.18; 
         document.getElementById('printDate').innerText = new Date().toLocaleDateString('he-IL');
 
+        // --- Strategy Logic ---
+        function updateWeights() {
+            const p = parseFloat(document.getElementById('wPrice').value) || 0;
+            const t = parseFloat(document.getElementById('wTech').value) || 0;
+            const r = parseFloat(document.getElementById('wTerms').value) || 0;
+            const total = p + t + r;
+
+            const badge = document.getElementById('weightTotal');
+            badge.innerText = `סה"כ: ${total}%`;
+            
+            if (total === 100) {
+                badge.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800";
+                state.weights.PRICE = p / 100;
+                state.weights.TECH = t / 100;
+                state.weights.TERMS = r / 100;
+                
+                // Update Print Summary
+                document.getElementById('printWPrice').innerText = p;
+                document.getElementById('printWTech').innerText = t;
+                document.getElementById('printWTerms').innerText = r;
+
+                // Re-run analysis if data exists
+                if (state.items.length > 0) reAnalyzeAll();
+            } else {
+                badge.className = "text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-800";
+            }
+        }
+
+        function updateCurrency() {
+            state.currency = document.getElementById('currencySelect').value;
+            document.getElementById('printCurrency').innerText = state.currency;
+            if (state.items.length > 0) renderList(); // Just re-render visuals
+        }
+
+        function reAnalyzeAll() {
+            // Re-map raw data through analysis engine with NEW weights
+            const freshAnalysis = state.items.map(item => {
+                // We need to keep original data, stripping old analysis
+                const raw = { ...item }; 
+                delete raw._analysis;
+                return analyzeItem(raw);
+            }).filter(x => x);
+            
+            state.items = freshAnalysis;
+            renderList();
+        }
+
+        // --- Core Logic ---
         function safeString(val) { return (val || 'לא צוין').toString(); }
 
-        // Logic
         function analyzeItem(item) {
             const vendors = [1, 2, 3].map(id => ({
                 id, 
@@ -247,9 +292,13 @@
                 else if (v.terms.includes('60')) sTerms = 85;
                 else if (v.terms.includes('מזומן')) sTerms = 30;
 
+                // Dynamic Weights Used Here
                 v.finalScore = (sPrice * state.weights.PRICE) + ((v.score * 10) * state.weights.TECH) + (sTerms * state.weights.TERMS);
+                
                 v.isRisky = v.score < 6;
-                if (v.isRisky) v.finalScore -= 30;
+                // Penalize risk only if Tech weight is significant (>10%)
+                if (v.isRisky && state.weights.TECH > 0.1) v.finalScore -= 30;
+                
                 v.logisticsWarning = (v.shipping.includes('לא'));
             });
 
@@ -262,23 +311,23 @@
             if (winner.id !== cheapest.id) {
                 const diff = winner.price - cheapest.price;
                 if (cheapest.isRisky) {
-                    insight = `<b>שים לב:</b> הספק הזול ביותר (${cheapest.name}) נפסל עקב איכות נמוכה. מומלץ לשלם ${diff.toFixed(0)}₪ יותר עבור ${winner.name}.`;
+                    insight = `<b>שים לב:</b> הספק הזול נפסל עקב איכות. מומלץ לשלם תוספת עבור ${winner.name}.`;
                     insightType = "warning";
                 } else {
-                    insight = `<b>המלצת איכות:</b> ${winner.name} מציע ציון טכני עדיף תמורת תוספת של ${diff.toFixed(0)}₪.`;
+                    insight = `<b>המלצת איכות:</b> ${winner.name} מנצח בזכות ציון משוקלל גבוה (דגש: ${(state.weights.TECH*100).toFixed(0)}% טכני).`;
                     insightType = "positive";
                 }
             } else {
-                insight = winner.isRisky ? `<b>אזהרה:</b> כל ההצעות בסיכון איכות!` : `ההצעה המשתלמת ביותר בשקלול מחיר סופי ותנאים.`;
+                insight = winner.isRisky ? `<b>אזהרה:</b> כל ההצעות בסיכון!` : `ההצעה המשתלמת ביותר לפי האסטרטגיה שנבחרה.`;
                 if(winner.isRisky) insightType = "warning";
             }
 
-            if (winner.vatAdjusted) insight += `<br><span class="text-blue-600 text-xs">ℹ️ המחיר הזוכה הותאם לכלול מע"מ (18%).</span>`;
+            if (winner.vatAdjusted) insight += `<br><span class="text-blue-600 text-xs">ℹ️ מחיר כולל מע"מ מותאם.</span>`;
 
             return { ...item, _analysis: { winnerId: winner.id, vendors, minPrice, maxPrice, winner, savings, insight, insightType } };
         }
 
-        // Render
+        // --- Render Logic ---
         function renderList() {
             const container = document.getElementById('itemsContainer');
             container.innerHTML = '';
@@ -303,9 +352,9 @@
                     const barColor = v.isRisky ? 'bg-red-500' : (isWin ? 'bg-emerald-500' : 'bg-blue-500');
 
                     let badges = '';
-                    if (v.isRisky) badges += `<span class="badge badge-risk"><i class="fas fa-ban"></i> סיכון</span>`;
-                    else if (v.score >= 9) badges += `<span class="badge badge-safe"><i class="fas fa-check"></i> איכות</span>`;
-                    if (v.vatAdjusted) badges += `<span class="badge badge-vat-fix">כולל מע"מ מתוקן</span>`;
+                    if (v.isRisky) badges += `<span class="badge badge-risk">סיכון</span>`;
+                    else if (v.score >= 9) badges += `<span class="badge badge-safe">איכות</span>`;
+                    if (v.vatAdjusted) badges += `<span class="badge badge-vat-fix">מע"מ</span>`;
 
                     vendorsHtml += `
                         <div class="p-4 rounded-lg border ${borderColor} relative flex flex-col h-full">
@@ -316,8 +365,7 @@
                             </div>
                             
                             <div class="text-xl font-black text-slate-800 mb-2">
-                                ₪${v.price.toLocaleString(undefined, {maximumFractionDigits: 0})}
-                                ${v.vatAdjusted ? '<span class="text-[10px] text-slate-400 font-normal block -mt-1">(הוסף מע"מ)</span>' : ''}
+                                ${state.currency}${v.price.toLocaleString(undefined, {maximumFractionDigits: 0})}
                             </div>
                             
                             <div class="flex flex-wrap gap-1 mb-3">${badges}</div>
@@ -325,13 +373,13 @@
                             <div class="text-[10px] text-slate-500 mb-2 pt-2 border-t border-slate-200 border-dashed space-y-0.5">
                                 <div class="flex justify-between"><span>אספקה:</span> <span>${v.delivery}</span></div>
                                 <div class="flex justify-between"><span>משלוח:</span> <span>${v.shipping}</span></div>
-                                <div class="flex justify-between"><span>מע"מ (מקור):</span> <span class="${v.vat.includes('לא') ? 'text-red-500 font-bold' : 'text-green-600'}">${v.vat}</span></div>
+                                <div class="flex justify-between"><span>מע"מ:</span> <span class="${v.vat.includes('לא') ? 'text-red-500 font-bold' : 'text-green-600'}">${v.vat}</span></div>
                                 <div class="flex justify-between"><span>תשלום:</span> <span>${v.terms}</span></div>
                             </div>
 
                             <div class="mt-auto">
                                 <div class="flex justify-between text-[10px] text-slate-500 mb-1">
-                                    <span>ציון טכני: <b class="${v.score < 6 ? 'text-red-500' : ''}">${v.score}</b></span>
+                                    <span>ציון: <b class="${v.score < 6 ? 'text-red-500' : ''}">${v.score}</b></span>
                                     <span>${v.finalScore.toFixed(0)}</span>
                                 </div>
                                 <div class="score-bar-bg">
@@ -349,7 +397,6 @@
                         <div class="lg:col-span-1 flex flex-col">
                             <h3 class="font-bold text-slate-800 text-lg">${item.name}</h3>
                             <div class="text-xs text-slate-500 mt-1 mb-3 bg-slate-50 p-2 rounded border border-slate-100">${item.spec || 'אין מפרט'}</div>
-                            
                             <div class="ai-insight border-${an.insightType === 'warning' ? 'orange' : 'emerald'}-500">
                                 ${an.insight}
                             </div>
@@ -365,7 +412,34 @@
             updateCharts();
         }
 
-        // Charts
+        // --- Email Logic ---
+        function sendEmail() {
+            if (state.items.length === 0) return alert("אנא טען נתונים תחילה");
+            
+            const totalCost = document.getElementById('kpiTotalCost').innerText;
+            const savings = document.getElementById('kpiSavings').innerText;
+            const date = new Date().toLocaleDateString('he-IL');
+            
+            const subject = `דו"ח רכש והשוואת ספקים - ${date}`;
+            const body = `שלום רב,
+            
+מצורף סיכום ניתוח רכש שהופק במערכת Procurement AI.
+
+סיכום מנהלים:
+--------------------------------
+סה"כ עלות עסקה מומלצת: ${totalCost}
+חיסכון משוער מול חלופות: ${savings}
+אסטרטגיה שנבחרה: ${document.getElementById('wPrice').value}% מחיר, ${document.getElementById('wTech').value}% טכני.
+
+אנא ראו את קובץ ה-PDF המצורף לפירוט מלא של הספקים וההמלצות.
+
+בברכה,
+מערכת הרכש`;
+
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        // --- Charts & Helpers ---
         function updateCharts() {
             const vendorMap = {};
             let riskyCount = 0; let totalCost = 0; let totalSavings = 0;
@@ -380,8 +454,9 @@
                     vendorMap[v.name].sumScore += v.score;
                 });
             });
-            document.getElementById('kpiTotalCost').innerText = '₪' + totalCost.toLocaleString(undefined, {maximumFractionDigits: 0});
-            document.getElementById('kpiSavings').innerText = '₪' + totalSavings.toLocaleString(undefined, {maximumFractionDigits: 0});
+
+            document.getElementById('kpiTotalCost').innerText = state.currency + totalCost.toLocaleString(undefined, {maximumFractionDigits: 0});
+            document.getElementById('kpiSavings').innerText = state.currency + totalSavings.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('kpiRisks').innerText = riskyCount;
 
             const xData = []; const yData = []; const textData = []; const colorData = [];
@@ -390,12 +465,12 @@
                 const avgScore = v.sumScore / v.count;
                 xData.push(v.count); yData.push(avgScore); textData.push(vName); colorData.push(avgScore < 7 ? '#ef4444' : '#10b981');
             });
+
             const trace = { x: xData, y: yData, mode: 'markers+text', type: 'scatter', text: textData, textposition: 'top center', marker: { size: 14, color: colorData, opacity: 0.8 } };
-            const layout = { margin: {t:20, b:40, l:40, r:20}, xaxis: { title: 'נפח פעילות (מספר הצעות)', showgrid: true, zeroline: false }, yaxis: { title: 'ציון איכות ממוצע', range: [0, 11] }, hovermode: 'closest' };
+            const layout = { margin: {t:20, b:40, l:40, r:20}, xaxis: { title: 'נפח פעילות', showgrid: true }, yaxis: { title: 'ציון איכות', range: [0, 11] } };
             Plotly.newPlot('chartMatrix', [trace], layout, {displayModeBar: false});
         }
 
-        // Import
         function showError(msg) {
             const el = document.getElementById('errorMsg');
             document.getElementById('errorText').innerText = msg;
