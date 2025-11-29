@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procurement AI 3.8 - Perfect Print</title>
+    <title>Procurement AI 3.9 - Print Fix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
@@ -37,68 +37,85 @@
         .animate-fade-in { animation: slideIn 0.4s ease-out; }
         @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- PDF PRINT STYLES (VERSION 3.8 - FINAL FIX) --- */
+        /* --- PDF PRINT STYLES (VERSION 3.9 - FORCED LAYOUT) --- */
         @media print {
-            @page { 
-                size: A4 landscape; /* דף לרוחב */
-                margin: 5mm; /* שוליים מינימליים */
-            }
+            @page { size: landscape; margin: 5mm; }
             
             body { 
                 background: white !important; 
                 -webkit-print-color-adjust: exact; 
-                zoom: 0.75; /* הקטנה אגרסיבית כדי שהכל ייכנס */
-                width: 100% !important;
+                print-color-adjust: exact;
+                font-size: 12px; /* הקטנת פונט כללית */
             }
+
+            /* הסתרת כפתורים ותפריטים */
+            header .actions, #csvLabel, #errorMsg, #emptyState, #toast-container, button, .hidden-print { display: none !important; }
             
-            /* הסתרת אלמנטים */
-            header .actions, #csvLabel, #errorMsg, #emptyState, #toast-container, button { display: none !important; }
-            
-            /* עיצוב כותרת להדפסה */
             header { 
-                background: white !important; color: black !important; box-shadow: none !important; 
-                border-bottom: 2px solid #000; height: auto !important; padding: 10px 0 !important; 
-                position: static !important; width: 100% !important;
+                position: static !important; 
+                height: auto !important; 
+                border-bottom: 2px solid #000;
+                color: black !important;
+                background: white !important;
+                box-shadow: none !important;
             }
             .text-\[11px\] { display: none !important; }
 
-            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-            #printHeader { display: block !important; margin-bottom: 20px; }
-            
-            /* --- תיקון הפריסה (Layout Fix) --- */
-            .card { 
-                border: 1px solid #ccc !important; 
-                box-shadow: none !important; 
-                margin-bottom: 15px !important;
-                break-inside: avoid;
-                page-break-inside: avoid;
-                display: block !important;
-                width: 100% !important;
-            }
+            .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            #printHeader { display: block !important; margin-bottom: 10px; }
 
-            /* שימוש ב-Flexbox במקום Grid כדי לשלוט ברוחב */
-            .card > div.grid {
+            /* --- כפיית מבנה לרוחב (Table-like Layout) --- */
+            
+            /* הכרטיס הראשי */
+            .card {
                 display: flex !important;
                 flex-direction: row !important;
-                gap: 20px !important;
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                margin-bottom: 10px !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
                 width: 100% !important;
             }
 
-            /* עמודת המידע (צד ימין) - 25% */
-            .lg\:col-span-1 { 
-                width: 25% !important; 
-                flex-shrink: 0 !important;
-                border-left: 1px dashed #ddd;
-                padding-left: 15px;
+            /* ביטול הגריד של Tailwind */
+            .card > div.grid {
+                display: flex !important;
+                width: 100% !important;
+                gap: 10px !important;
+            }
+
+            /* עמודה ימנית (פרטי פריט) - קבוע 25% */
+            .lg\:col-span-1 {
+                width: 25% !important;
+                min-width: 25% !important;
+                border-left: 1px solid #eee;
+                padding-left: 10px;
+            }
+
+            /* עמודה שמאלית (ספקים) - קבוע 75% */
+            .lg\:col-span-3 {
+                width: 75% !important;
+                display: flex !important; /* מכריח שורה אחת */
+                flex-direction: row !important;
+                gap: 10px !important;
+            }
+
+            /* כל ספק מקבל שליש מהמקום הנותר */
+            .lg\:col-span-3 > div {
+                flex: 1 !important;
+                width: 33% !important;
+                border: 1px solid #eee !important;
             }
             
-            /* עמודת הספקים (צד שמאל) - 75% */
-            .lg\:col-span-3 { 
-                width: 75% !important;
-                display: grid !important; 
-                grid-template-columns: 1fr 1fr 1fr !important; /* 3 עמודות שוות */
-                gap: 15px !important;
-            }
+            /* הקטנת טקסטים בתוך הכרטיסים */
+            .text-xl { font-size: 1.1rem !important; }
+            .text-lg { font-size: 1rem !important; }
+            
+            /* הסתרת הגרף הגדול בהדפסה כדי לחסוך מקום */
+            #analyticsSection { display: none !important; }
+            #kpiSection { display: flex !important; gap: 10px; margin-bottom: 10px; }
+            #kpiSection .card { flex: 1; padding: 10px !important; }
         }
         #printHeader { display: none; }
     </style>
@@ -112,7 +129,7 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">3.8</span></h1>
+                    <h1 class="text-xl font-black tracking-tight leading-none">PROCUREMENT <span class="text-emerald-400">AI</span> <span class="text-xs font-normal text-slate-400 align-top">3.9</span></h1>
                     <div class="text-[11px] text-slate-400 flex gap-3 mt-1">
                         <span class="bg-slate-800 px-2 py-0.5 rounded text-emerald-300 font-bold border border-emerald-900/50">60% מחיר (כולל מע"מ)</span>
                         <span class="bg-slate-800 px-2 py-0.5 rounded text-blue-300 font-bold border border-blue-900/50">30% טכני</span>
@@ -138,9 +155,9 @@
 
     <div class="container mx-auto px-4 py-8 max-w-[98%]">
         
-        <div id="printHeader" class="text-center border-b pb-4 mb-6">
-            <h2 class="text-2xl font-bold text-slate-800">דו"ח ניתוח רכש והשוואת ספקים</h2>
-            <p class="text-slate-500 text-sm mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
+        <div id="printHeader" class="text-center border-b pb-2 mb-4">
+            <h2 class="text-xl font-bold text-slate-800">דו"ח ניתוח רכש והשוואת ספקים</h2>
+            <p class="text-slate-500 text-xs mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
         </div>
 
         <div id="errorMsg" class="hidden bg-red-100 border-r-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm" role="alert">
@@ -182,24 +199,20 @@
         
         <div id="emptyState" class="text-center py-20 border-2 border-dashed border-slate-300 rounded-2xl">
             <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-4xl"><i class="fas fa-robot"></i></div>
-            <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה (V3.8)</h3>
-            <p class="text-slate-500 mt-2">טען קובץ נתונים - הדפסה מותאמת ב-100% ל-A4 לרוחב</p>
+            <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה (V3.9)</h3>
+            <p class="text-slate-500 mt-2">טען קובץ נתונים - הדפסה מותאמת ב-100%</p>
         </div>
 
     </div>
 
     <script>
-        const state = {
-            items: [],
-            weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 }
-        };
-
+        const state = { items: [], weights: { PRICE: 0.60, TECH: 0.30, TERMS: 0.10 } };
         const VAT_RATE = 0.18; 
         document.getElementById('printDate').innerText = new Date().toLocaleDateString('he-IL');
 
         function safeString(val) { return (val || 'לא צוין').toString(); }
 
-        // --- Logic Engine (VAT Corrected) ---
+        // Logic
         function analyzeItem(item) {
             const vendors = [1, 2, 3].map(id => ({
                 id, 
@@ -216,7 +229,6 @@
 
             if (vendors.length === 0) return null;
 
-            // VAT Normalization
             vendors.forEach(v => {
                 if (v.vat.includes('לא') || v.vat.includes('No')) {
                     v.price = v.rawPrice * (1 + VAT_RATE); 
@@ -266,7 +278,7 @@
             return { ...item, _analysis: { winnerId: winner.id, vendors, minPrice, maxPrice, winner, savings, insight, insightType } };
         }
 
-        // --- Render Logic ---
+        // Render
         function renderList() {
             const container = document.getElementById('itemsContainer');
             container.innerHTML = '';
@@ -297,7 +309,7 @@
 
                     vendorsHtml += `
                         <div class="p-4 rounded-lg border ${borderColor} relative flex flex-col h-full">
-                            ${isWin ? '<div class="absolute -top-3 left-3 bg-emerald-600 text-white text-[10px] px-2 py-1 rounded shadow-md z-10 font-bold"><i class="fas fa-trophy mr-1"></i>מומלץ</div>' : ''}
+                            ${isWin ? '<div class="absolute -top-3 left-3 bg-emerald-600 text-white text-[10px] px-2 py-1 rounded shadow-md z-10 font-bold hidden-print"><i class="fas fa-trophy mr-1"></i>מומלץ</div>' : ''}
                             
                             <div class="flex justify-between items-start mb-2">
                                 <div class="font-bold text-sm text-slate-700 line-clamp-1" title="${v.name}">${v.name}</div>
@@ -353,11 +365,10 @@
             updateCharts();
         }
 
-        // --- Chart & Stats ---
+        // Charts
         function updateCharts() {
             const vendorMap = {};
             let riskyCount = 0; let totalCost = 0; let totalSavings = 0;
-
             state.items.forEach(item => {
                 const an = item._analysis;
                 totalCost += an.winner.price;
@@ -369,7 +380,6 @@
                     vendorMap[v.name].sumScore += v.score;
                 });
             });
-
             document.getElementById('kpiTotalCost').innerText = '₪' + totalCost.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('kpiSavings').innerText = '₪' + totalSavings.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('kpiRisks').innerText = riskyCount;
@@ -380,13 +390,12 @@
                 const avgScore = v.sumScore / v.count;
                 xData.push(v.count); yData.push(avgScore); textData.push(vName); colorData.push(avgScore < 7 ? '#ef4444' : '#10b981');
             });
-
             const trace = { x: xData, y: yData, mode: 'markers+text', type: 'scatter', text: textData, textposition: 'top center', marker: { size: 14, color: colorData, opacity: 0.8 } };
             const layout = { margin: {t:20, b:40, l:40, r:20}, xaxis: { title: 'נפח פעילות (מספר הצעות)', showgrid: true, zeroline: false }, yaxis: { title: 'ציון איכות ממוצע', range: [0, 11] }, hovermode: 'closest' };
             Plotly.newPlot('chartMatrix', [trace], layout, {displayModeBar: false});
         }
 
-        // --- Safe Import Logic ---
+        // Import
         function showError(msg) {
             const el = document.getElementById('errorMsg');
             document.getElementById('errorText').innerText = msg;
