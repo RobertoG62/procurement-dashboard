@@ -5,17 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Procurement AI 5.0 - The Smart Consultant</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- All served from this site. Charting, CSV parsing, icons, fonts and the
+         stylesheet used to come from four different third parties on every
+         load, each learning the visitor's IP before the dashboard drew. That
+         matters more than usual here: this tool reads procurement files, and
+         the request pattern alone said when someone was working on one. -->
+    <link rel="stylesheet" href="assets/css/tailwind.css">
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/vendor/fontawesome/fontawesome.min.css">
+    <script src="vendor/papaparse.min.js"></script>
+    <script src="vendor/plotly.min.js"></script>
     
     <style>
         :root {
             --brand-dark: #0f172a;
             --brand-primary: #10b981;
-            --brand-accent: #6366f1; /* Indigo */
+            --brand-accent: #4f46e5; /* Indigo */
         }
         body { font-family: 'Rubik', sans-serif; background: #f0f4f8; color: #334155; }
         
@@ -69,6 +74,7 @@
     </style>
 </head>
 <body class="pb-20">
+<main>
 
     <header class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
         <div class="container mx-auto px-4 h-20 flex items-center justify-between">
@@ -86,7 +92,7 @@
                 <button onclick="loadSampleData()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-slate-300 transition"><i class="fas fa-vial mr-1"></i> דוגמה</button>
                 <button onclick="sendEmail()" class="text-sm bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2"><i class="fas fa-envelope"></i> שלח מייל</button>
                 <button onclick="window.print()" class="text-sm bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2"><i class="fas fa-print"></i> PDF</button>
-                <label class="text-sm bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2 cursor-pointer">
+                <label class="text-sm bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white font-bold shadow-lg transition flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-file-upload"></i> טען CSV
                     <input type="file" id="csvInput" class="hidden" accept=".csv" onchange="importCSV(this)">
                 </label>
@@ -105,7 +111,7 @@
         
         <div id="printHeader" class="text-center border-b pb-2 mb-4">
             <h2 class="text-xl font-bold text-slate-800">דו"ח ניתוח רכש והשוואת ספקים</h2>
-            <p class="text-slate-500 text-xs mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
+            <p class="text-slate-600 text-xs mt-1">הופק באמצעות Procurement AI | תאריך: <span id="printDate"></span></p>
         </div>
 
         <div id="dashboardSection">
@@ -114,17 +120,17 @@
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-2 border-l pl-6 ml-2">
-                            <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="fas fa-sliders-h"></i></div>
+                            <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-600"><i class="fas fa-sliders-h"></i></div>
                             <span class="font-bold text-slate-700 text-sm">הגדרות שקלול:</span>
                         </div>
-                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-emerald-600">מחיר %</span><input type="number" id="wPrice" value="60" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
-                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-blue-600">טכני %</span><input type="number" id="wTech" value="30" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
-                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-purple-600">תנאים %</span><input type="number" id="wTerms" value="10" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-emerald-700">מחיר %</span><input type="number" id="wPrice" aria-label="משקל מחיר באחוזים" value="60" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-blue-600">טכני %</span><input type="number" id="wTech" aria-label="משקל היבט טכני באחוזים" value="30" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
+                        <div class="flex items-center gap-2"><span class="text-xs font-bold text-purple-600">תנאים %</span><input type="number" id="wTerms" aria-label="משקל תנאי התקשרות באחוזים" value="10" min="0" max="100" class="strategy-input" onchange="updateWeights()"></div>
                         <div id="weightTotal" class="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800">סה"כ: 100%</div>
                     </div>
                     <div class="flex items-center gap-3 border-r pr-6 mr-2">
                         <span class="font-bold text-slate-700 text-sm">מטבע:</span>
-                        <select id="currencySelect" onchange="updateCurrency()" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-3 text-sm font-bold"><option value="₪">₪ שקל</option><option value="$">$ דולר</option><option value="€">€ יורו</option></select>
+                        <select id="currencySelect" aria-label="בחירת מטבע" onchange="updateCurrency()" class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-3 text-sm font-bold"><option value="₪">₪ שקל</option><option value="$">$ דולר</option><option value="€">€ יורו</option></select>
                     </div>
                 </div>
             </div>
@@ -132,17 +138,17 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 hidden" id="kpiSection">
                 <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="card p-5 border-r-4 border-r-blue-500">
-                        <div class="text-xs text-slate-500 font-bold uppercase">סה"כ הזמנה מומלצת</div>
+                        <div class="text-xs text-slate-600 font-bold uppercase">סה"כ הזמנה מומלצת</div>
                         <div class="text-3xl font-black text-slate-800 mt-1" id="kpiTotalCost">0</div>
                         <div class="text-xs text-slate-400 mt-2">מחיר סופי (כולל מע"מ)</div>
                     </div>
                     <div class="card p-5 border-r-4 border-r-emerald-500">
-                        <div class="text-xs text-slate-500 font-bold uppercase">חיסכון חכם</div>
-                        <div class="text-3xl font-black text-emerald-600 mt-1" id="kpiSavings">0</div>
+                        <div class="text-xs text-slate-600 font-bold uppercase">חיסכון חכם</div>
+                        <div class="text-3xl font-black text-emerald-700 mt-1" id="kpiSavings">0</div>
                         <div class="text-xs text-slate-400 mt-2">מול החלופה היקרה ביותר</div>
                     </div>
                     <div class="card p-5 border-r-4 border-r-red-500">
-                        <div class="text-xs text-slate-500 font-bold uppercase">התראות סיכון</div>
+                        <div class="text-xs text-slate-600 font-bold uppercase">התראות סיכון</div>
                         <div class="text-3xl font-black text-red-500 mt-1" id="kpiRisks">0</div>
                         <div class="text-xs text-slate-400 mt-2">ספקים שנפסלו עקב איכות</div>
                     </div>
@@ -163,8 +169,8 @@
             
             <div id="emptyState" class="text-center py-20 border-2 border-dashed border-slate-300 rounded-2xl">
                 <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-4xl"><i class="fas fa-robot"></i></div>
-                <h3 class="text-xl font-bold text-slate-700">המערכת מוכנה לניתוח</h3>
-                <p class="text-slate-500 mt-2">טען קובץ, או עבור ל"אשף האסטרטגיה" לבחירת מודל רכש</p>
+                <h2 class="text-xl font-bold text-slate-700">המערכת מוכנה לניתוח</h2>
+                <p class="text-slate-600 mt-2">טען קובץ, או עבור ל"אשף האסטרטגיה" לבחירת מודל רכש</p>
                 <button onclick="switchTab('wizard')" class="mt-4 text-indigo-600 font-bold hover:underline">פתח את אשף האסטרטגיה <i class="fas fa-arrow-left"></i></button>
             </div>
         </div>
@@ -172,7 +178,7 @@
         <div id="wizardSection" class="hidden animate-fade-in">
             <div class="text-center mb-10 mt-4">
                 <h2 class="text-3xl font-black text-slate-800 mb-2">אשף אסטרטגיית רכש</h2>
-                <p class="text-slate-500">בחר את סוג הרכש כדי להתאים את האלגוריתם לצרכים שלך</p>
+                <p class="text-slate-600">בחר את סוג הרכש כדי להתאים את האלגוריתם לצרכים שלך</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -181,10 +187,10 @@
                         <i class="fas fa-box-open"></i>
                     </div>
                     <h3 class="font-bold text-lg text-slate-800 mb-2">רכש מדף / סחורה</h3>
-                    <p class="text-xs text-slate-500 mb-4 h-10">ציוד משרדי, חומרי ניקוי, חלפים סטנדרטיים.</p>
+                    <p class="text-xs text-slate-600 mb-4 h-10">ציוד משרדי, חומרי ניקוי, חלפים סטנדרטיים.</p>
                     
                     <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                        <div class="flex justify-between"><span>מחיר:</span> <span class="font-bold text-emerald-600">80%</span></div>
+                        <div class="flex justify-between"><span>מחיר:</span> <span class="font-bold text-emerald-700">80%</span></div>
                         <div class="flex justify-between opacity-50"><span>טכני:</span> <span>10%</span></div>
                         <div class="flex justify-between opacity-50"><span>תנאים:</span> <span>10%</span></div>
                     </div>
@@ -196,14 +202,14 @@
                         <i class="fas fa-tractor"></i>
                     </div>
                     <h3 class="font-bold text-lg text-slate-800 mb-2">ציוד ומכונות</h3>
-                    <p class="text-xs text-slate-500 mb-4 h-10">טרקטורונים, משאבות, מכונות ייצור (CAPEX).</p>
+                    <p class="text-xs text-slate-600 mb-4 h-10">טרקטורונים, משאבות, מכונות ייצור (CAPEX).</p>
                     
                     <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
                         <div class="flex justify-between opacity-70"><span>מחיר:</span> <span>40%</span></div>
                         <div class="flex justify-between"><span>טכני:</span> <span class="font-bold text-blue-600">50%</span></div>
                         <div class="flex justify-between opacity-50"><span>תנאים:</span> <span>10%</span></div>
                     </div>
-                    <button class="w-full py-2 rounded-lg bg-white border border-emerald-500 text-emerald-600 font-bold text-sm group-hover:bg-emerald-600 group-hover:text-white transition">בחר בזה</button>
+                    <button class="w-full py-2 rounded-lg bg-white border border-emerald-500 text-emerald-700 font-bold text-sm group-hover:bg-emerald-600 group-hover:text-white transition">בחר בזה</button>
                 </div>
 
                 <div class="card strategy-card p-6 text-center hover:-translate-y-2 transition-all duration-300 group" onclick="applyStrategy(30, 60, 10)">
@@ -211,7 +217,7 @@
                         <i class="fas fa-user-tie"></i>
                     </div>
                     <h3 class="font-bold text-lg text-slate-800 mb-2">שירותים וקבלנים</h3>
-                    <p class="text-xs text-slate-500 mb-4 h-10">יועצים, עורכי דין, קבלני עפר, כוח אדם.</p>
+                    <p class="text-xs text-slate-600 mb-4 h-10">יועצים, עורכי דין, קבלני עפר, כוח אדם.</p>
                     
                     <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
                         <div class="flex justify-between opacity-50"><span>מחיר:</span> <span>30%</span></div>
@@ -226,7 +232,7 @@
                         <i class="fas fa-handshake"></i>
                     </div>
                     <h3 class="font-bold text-lg text-slate-800 mb-2">שותפות אסטרטגית</h3>
-                    <p class="text-xs text-slate-500 mb-4 h-10">ספק מרכזי, פרויקט תשתית ארוך טווח.</p>
+                    <p class="text-xs text-slate-600 mb-4 h-10">ספק מרכזי, פרויקט תשתית ארוך טווח.</p>
                     
                     <div class="space-y-2 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-lg border border-slate-100">
                         <div class="flex justify-between opacity-70"><span>מחיר:</span> <span>40%</span></div>
@@ -385,14 +391,14 @@
                             <div class="flex justify-between items-start mb-2"><div class="font-bold text-sm text-slate-700 line-clamp-1" title="${v.name}">${v.name}</div></div>
                             <div class="text-xl font-black text-slate-800 mb-2">${state.currency}${v.price.toLocaleString(undefined, {maximumFractionDigits: 0})}</div>
                             <div class="flex flex-wrap gap-1 mb-3">${badges}</div>
-                            <div class="text-[10px] text-slate-500 mb-2 pt-2 border-t border-slate-200 border-dashed space-y-0.5">
+                            <div class="text-[10px] text-slate-600 mb-2 pt-2 border-t border-slate-200 border-dashed space-y-0.5">
                                 <div class="flex justify-between"><span>אספקה:</span> <span>${v.delivery}</span></div>
                                 <div class="flex justify-between"><span>משלוח:</span> <span>${v.shipping}</span></div>
                                 <div class="flex justify-between"><span>מע"מ:</span> <span class="${v.vat.includes('לא') ? 'text-red-500 font-bold' : 'text-green-600'}">${v.vat}</span></div>
                                 <div class="flex justify-between"><span>תשלום:</span> <span>${v.terms}</span></div>
                             </div>
                             <div class="mt-auto">
-                                <div class="flex justify-between text-[10px] text-slate-500 mb-1"><span>ציון: <b>${v.score}</b></span><span>${v.finalScore.toFixed(0)}</span></div>
+                                <div class="flex justify-between text-[10px] text-slate-600 mb-1"><span>ציון: <b>${v.score}</b></span><span>${v.finalScore.toFixed(0)}</span></div>
                                 <div class="score-bar-bg"><div class="score-bar-fill ${barColor}" style="width: ${Math.min(v.finalScore, 100)}%"></div></div>
                             </div>
                         </div>`;
@@ -404,7 +410,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                         <div class="lg:col-span-1 flex flex-col">
                             <h3 class="font-bold text-slate-800 text-lg">${item.name}</h3>
-                            <div class="text-xs text-slate-500 mt-1 mb-3 bg-slate-50 p-2 rounded border border-slate-100">${item.spec || 'אין מפרט'}</div>
+                            <div class="text-xs text-slate-600 mt-1 mb-3 bg-slate-50 p-2 rounded border border-slate-100">${item.spec || 'אין מפרט'}</div>
                             <div class="ai-insight border-${an.insightType === 'warning' ? 'orange' : 'emerald'}-500">${an.insight}</div>
                         </div>
                         <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">${vendorsHtml}</div>
@@ -468,5 +474,11 @@
             importCSV({ files: dt.files });
         }
     </script>
+</main>
+<footer class="policy-links">
+  <p><b>הקובץ שאתה טוען נשאר בדפדפן שלך ואינו נשלח לשום מקום.</b></p>
+  <p><a href="privacy.html">מדיניות פרטיות</a> · <a href="terms.html">תנאי שימוש</a> · <a href="accessibility.html">הצהרת נגישות</a></p>
+</footer>
+<style>.policy-links{padding:20px 18px 26px;text-align:center;font-size:.8rem;line-height:1.85;color:#475569;background:#f8fafc;border-top:1px solid #cbd5e1}.policy-links p{margin:0 0 5px}.policy-links a{color:#4338ca;text-decoration:underline}</style>
 </body>
 </html>
